@@ -1,0 +1,184 @@
+### Cinema Tickets API - REST Client Tests
+### Certifique-se de que a aplicação está rodando em http://localhost:3000
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+###############################################
+# SESSIONS - Gestão de Sessões
+###############################################
+
+### Criar nova sessão
+# @name createSession
+POST {{baseUrl}}/sessions
+Content-Type: {{contentType}}
+
+{
+  "movieTitle": "Avatar: O Caminho da Água",
+  "room": "Sala 1",
+  "startTime": "2024-02-01T19:00:00Z",
+  "ticketPrice": 25.00,
+  "totalSeats": 16
+}
+
+### Criar segunda sessão (para testes)
+POST {{baseUrl}}/sessions
+Content-Type: {{contentType}}
+
+{
+  "movieTitle": "Duna: Parte 2",
+  "room": "Sala 2",
+  "startTime": "2024-02-01T21:30:00Z",
+  "ticketPrice": 30.00,
+  "totalSeats": 20
+}
+
+### Listar todas as sessões
+GET {{baseUrl}}/sessions
+
+### Buscar sessão por ID (substitua pelo ID real)
+@sessionId = 32f30f5c-be6a-451a-a450-19876757becf
+GET {{baseUrl}}/sessions/{{sessionId}}
+
+### Listar assentos disponíveis de uma sessão
+GET {{baseUrl}}/sessions/{{sessionId}}/available-seats
+
+###############################################
+# RESERVATIONS - Reserva de Assentos
+###############################################
+
+### Criar reserva (substitua seatId e requestId por valores reais)
+# @name createReservation
+POST {{baseUrl}}/reservations
+Content-Type: {{contentType}}
+
+{
+  "userId": "user-123",
+  "seatId": "550e8400-e29b-41d4-a716-446655440001",
+  "requestId": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### Criar reserva para usuário 2 (teste de concorrência)
+POST {{baseUrl}}/reservations
+Content-Type: {{contentType}}
+
+{
+  "userId": "user-456",
+  "seatId": "550e8400-e29b-41d4-a716-446655440002",
+  "requestId": "123e4567-e89b-12d3-a456-426614174001"
+}
+
+### Teste de idempotência - mesma requisição
+POST {{baseUrl}}/reservations
+Content-Type: {{contentType}}
+
+{
+  "userId": "user-123",
+  "seatId": "550e8400-e29b-41d4-a716-446655440001",
+  "requestId": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+### Listar reservas de um usuário
+GET {{baseUrl}}/reservations?userId=user-123
+
+### Buscar reserva por ID (substitua pelo ID real da reserva)
+@reservationId = 550e8400-e29b-41d4-a716-446655440010
+GET {{baseUrl}}/reservations/{{reservationId}}
+
+###############################################
+# SALES - Confirmação de Pagamento
+###############################################
+
+### Confirmar pagamento de uma reserva
+# @name confirmPayment
+POST {{baseUrl}}/sales/confirm-payment
+Content-Type: {{contentType}}
+
+{
+  "reservationId": "{{reservationId}}",
+  "paymentId": "payment-pix-123456"
+}
+
+### Histórico de compras de um usuário
+GET {{baseUrl}}/sales?userId=user-123
+
+### Listar todas as vendas
+GET {{baseUrl}}/sales
+
+###############################################
+# FLUXO COMPLETO DE TESTE
+###############################################
+
+### 1. Criar sessão
+# Execute este request e copie o 'id' da sessão criada
+POST {{baseUrl}}/sessions
+Content-Type: {{contentType}}
+
+{
+  "movieTitle": "Oppenheimer",
+  "room": "Sala Premium",
+  "startTime": "2024-02-15T20:00:00Z",
+  "ticketPrice": 35.00,
+  "totalSeats": 16
+}
+
+### 2. Listar assentos disponíveis
+# Substitua {SESSION_ID} pelo ID da sessão criada acima
+GET {{baseUrl}}/sessions/{SESSION_ID}/available-seats
+
+### 3. Criar reserva
+# Copie o 'id' de um assento disponível e substitua {SEAT_ID}
+# Gere um novo UUID para requestId (pode usar: https://www.uuidgenerator.net/)
+POST {{baseUrl}}/reservations
+Content-Type: {{contentType}}
+
+{
+  "userId": "user-teste-001",
+  "seatId": "{SEAT_ID}",
+  "requestId": "{REQUEST_UUID}"
+}
+
+### 4. Confirmar pagamento
+# Copie o 'id' da reserva criada e substitua {RESERVATION_ID}
+POST {{baseUrl}}/sales/confirm-payment
+Content-Type: {{contentType}}
+
+{
+  "reservationId": "{RESERVATION_ID}",
+  "paymentId": "payment-test-001"
+}
+
+### 5. Verificar histórico de compras
+GET {{baseUrl}}/sales?userId=user-teste-001
+
+###############################################
+# TESTE DE CONCORRÊNCIA
+###############################################
+
+### Usuário 1 tenta reservar assento A1
+POST {{baseUrl}}/reservations
+Content-Type: {{contentType}}
+
+{
+  "userId": "user-concurrent-001",
+  "seatId": "{MESMO_SEAT_ID}",
+  "requestId": "{{$guid}}"
+}
+
+### Usuário 2 tenta reservar o MESMO assento A1 (deve falhar)
+POST {{baseUrl}}/reservations
+Content-Type: {{contentType}}
+
+{
+  "userId": "user-concurrent-002",
+  "seatId": "{MESMO_SEAT_ID}",
+  "requestId": "{{$guid}}"
+}
+
+###############################################
+# HEALTH CHECK & DOCS
+###############################################
+
+### Acessar documentação Swagger
+# @name swagger
+GET {{baseUrl}}/api-docs
