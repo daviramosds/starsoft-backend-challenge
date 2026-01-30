@@ -44,8 +44,8 @@ Este projeto implementa uma API RESTful completa para gerenciar:
 ### 1. Clone e configure
 
 ```bash
-git clone <seu-repositorio>
-cd STARTSOFT
+git clone https://github.com/daviramosds/starsoft-backend-challenge.git
+cd starsoft-backend-challenge
 cp .env.example .env
 ```
 
@@ -103,7 +103,7 @@ await this.redisService.acquireLock(lockKey, 5); // 5s timeout
 ### 2. Pessimistic Locking (PostgreSQL)
 ```typescript
 .setLock('pessimistic_write')
-```
+https://github.com/daviramosds/starsoft-backend-**challenge**```
 - Consistência no DB
 - Previne race conditions
 
