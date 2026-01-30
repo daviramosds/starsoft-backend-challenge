@@ -5,13 +5,13 @@ services:
     environment:
       POSTGRES_USER: cinema
       POSTGRES_PASSWORD: cinema123
-      POSTGRES_DB: cinema_tickets
+      POSTGRES_DB: cinema
       POSTGRES_INITDB_ARGS: "--encoding=UTF8"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql
     networks:
       - cinema-network
     healthcheck:
