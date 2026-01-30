@@ -246,16 +246,6 @@ docker-compose ps
 | Sem APM | Complexidade | Datadog/New Relic |
 | DLQ vazio | Sem consumer | Worker para processar |
 
-## 🚀 Próximos Passos
-
-- [ ] Autenticação JWT
-- [ ] Integração com gateway de pagamento
-- [ ] Dashboard de admin
-- [ ] Notificações por email/SMS
-- [ ] Observabilidade (Prometheus + Grafana)
-- [ ] Testes de carga (k6)
-- [ ] CI/CD pipeline
-
 ##  Decisões Técnicas
 
 ### TypeORM vs Prisma
